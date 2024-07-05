@@ -1,37 +1,29 @@
-import { a, useSpring, useSpringRef } from "@react-spring/three";
+import { a, useSprings } from "@react-spring/three";
+import { OrbitControls } from "@react-three/drei";
 
+const items = [
+  { initialPosition: [-3.5, 0, 0], finalPosition: [-1.5, 0, 0] },
+  { initialPosition: [0, 3.5, 0], finalPosition: [0, 0, 0] },
+  { initialPosition: [3.5, 0, 0], finalPosition: [1.5, 0, 0] },
+];
 const Scene = () => {
-  // const [spring, api] = useSpring(() => ({ from: { x: -2 } }));
-  const springRef = useSpringRef();
-  const spring = useSpring({ ref: springRef, from: { x: -2 } });
-
-  const clickHandler = () => {
-    // api.start({
-    //   to: { x: 2 },
-    // });
-    springRef.start({
-      to: { x: 2 },
-      config: { duration: 5000 },
-    });
-  };
-
-  const pointerOverHandler = () => {
-    springRef.pause();
-  };
-  const pointerOutHandler = () => {
-    springRef.resume();
-  };
+  const springs = useSprings(
+    items.length,
+    items.map((item) => ({
+      from: { position: item.initialPosition },
+      to: { position: item.finalPosition },
+    }))
+  );
+  console.log(springs);
   return (
     <>
-      <a.mesh
-        position-x={spring.x}
-        onClick={clickHandler}
-        onPointerOver={pointerOverHandler}
-        onPointerOut={pointerOutHandler}
-      >
-        <boxGeometry />
-        <a.meshBasicMaterial color="orange" />
-      </a.mesh>
+      <OrbitControls />
+      {springs.map((item, i) => (
+        <a.mesh key={Math.random()} scale={0.5} position={item.position}>
+          <boxGeometry />
+          <meshBasicMaterial color="orange" />
+        </a.mesh>
+      ))}
     </>
   );
 };
