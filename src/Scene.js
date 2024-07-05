@@ -4,33 +4,38 @@ import { useFrame } from "@react-three/fiber";
 import { useState } from "react";
 
 const Scene = () => {
-  // const [click, setClick] = useState(false);
-  // const { scale, color } = useSpring({
-  //   from: { scale: click ? 1 : 2, color: click ? "orange" : "hotpink" },
-  //   to: { scale: click ? 2 : 1, color: click ? "hotpink" : "orange" },
-  // });
-
-  // console.log(scale);
-  // const clickHandler = () => {
-  //   setClick(!click);
-  // };
-
-  const [spring, api] = useSpring(() => ({ from: { x: 0 } }));
-
-  const handleClick = () => {
-    api.start({ to: { x: spring.x.get() === 1 ? 0 : 1 } });
-  };
-
-  useFrame(() => {
-    console.log(spring.x.get());
+  const [clicked, setClicked] = useState(false);
+  let n = 0;
+  const { x, y, color } = useSpring({
+    from: { color: "hotpink", x: -2 },
+    to: { color: "yellow", x: 2 },
+    // to: [
+    //   { color: "yellow", x: 2 },
+    //   { color: "cyan", y: 2 },
+    //   { color: "grenyellow", x: -2 },
+    //   { color: "hotpink", y: -2 },
+    // ],
+    // loop: () => 3 > n++,
+    delay: 1000,
+    // reverse: clicked,
+    pause: clicked,
+    // reset: clicked,
+    // config: { duration: 5000 },
+    config: { mass: 20, tension: 700, clamp: false, friction: 100 },
+    onStart: () => console.log("start"),
+    onRest: () => console.log("rest"),
+    onPause: () => console.log("pause"),
+    onResume: () => console.log("resume"),
   });
-  console.log("render");
-  console.log(spring);
+
+  const clickHandler = () => {
+    setClicked(!clicked);
+  };
   return (
     <>
-      <a.mesh onClick={handleClick} position-x={spring.x}>
+      <a.mesh position-x={x} rotation-y={x} onClick={clickHandler}>
         <boxGeometry />
-        <a.meshBasicMaterial color="orange" />
+        <a.meshBasicMaterial color={color} />
       </a.mesh>
     </>
   );
