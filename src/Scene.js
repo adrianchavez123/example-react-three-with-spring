@@ -1,41 +1,36 @@
-// import { animated, useSpring } from "@react-spring/three";
-import { a, useSpring } from "@react-spring/three";
-import { useFrame } from "@react-three/fiber";
-import { useState } from "react";
+import { a, useSpring, useSpringRef } from "@react-spring/three";
 
 const Scene = () => {
-  const [clicked, setClicked] = useState(false);
-  let n = 0;
-  const { x, y, color } = useSpring({
-    from: { color: "hotpink", x: -2 },
-    to: { color: "yellow", x: 2 },
-    // to: [
-    //   { color: "yellow", x: 2 },
-    //   { color: "cyan", y: 2 },
-    //   { color: "grenyellow", x: -2 },
-    //   { color: "hotpink", y: -2 },
-    // ],
-    // loop: () => 3 > n++,
-    delay: 1000,
-    // reverse: clicked,
-    pause: clicked,
-    // reset: clicked,
-    // config: { duration: 5000 },
-    config: { mass: 20, tension: 700, clamp: false, friction: 100 },
-    onStart: () => console.log("start"),
-    onRest: () => console.log("rest"),
-    onPause: () => console.log("pause"),
-    onResume: () => console.log("resume"),
-  });
+  // const [spring, api] = useSpring(() => ({ from: { x: -2 } }));
+  const springRef = useSpringRef();
+  const spring = useSpring({ ref: springRef, from: { x: -2 } });
 
   const clickHandler = () => {
-    setClicked(!clicked);
+    // api.start({
+    //   to: { x: 2 },
+    // });
+    springRef.start({
+      to: { x: 2 },
+      config: { duration: 5000 },
+    });
+  };
+
+  const pointerOverHandler = () => {
+    springRef.pause();
+  };
+  const pointerOutHandler = () => {
+    springRef.resume();
   };
   return (
     <>
-      <a.mesh position-x={x} rotation-y={x} onClick={clickHandler}>
+      <a.mesh
+        position-x={spring.x}
+        onClick={clickHandler}
+        onPointerOver={pointerOverHandler}
+        onPointerOut={pointerOutHandler}
+      >
         <boxGeometry />
-        <a.meshBasicMaterial color={color} />
+        <a.meshBasicMaterial color="orange" />
       </a.mesh>
     </>
   );
